@@ -20,3 +20,9 @@ def registerValidator(username, fullname, email, password, confirmPass):
     if confirmPass != password:
         return {"status": False, "message": "Confirm password must be the same as password"}
     return {"status": True, "message": "Register success"}
+
+
+def createClassValidator(classname):
+    if classname == "":
+        return {"status": False, "message": "Classname must not be empty"}
+    return {"status": True, "message": "Create class success"}

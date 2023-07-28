@@ -1,4 +1,5 @@
 from pyrebase import *
+
 firebaseConfig = {
     'apiKey': "AIzaSyDQZ04wURdN2E3N_cMRO06M4CQ4DEnPvhk",
     'authDomain': "attendance-f373c.firebaseapp.com",

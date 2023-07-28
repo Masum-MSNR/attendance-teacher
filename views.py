@@ -1,7 +1,13 @@
+import string
+import random
+from datetime import date, datetime
 from tkinter import *
 from tkinter.ttk import *
 from validators import *
 from funcs import *
+
+current_user = {}
+current_class = {}
 
 
 def toggle(root, frame, ui):
@@ -12,6 +18,12 @@ def toggle(root, frame, ui):
         showRegisterUi(root)
     elif ui == "main":
         showMainUi(root)
+    elif ui == "create_class":
+        showCreateClassUi(root)
+    elif ui == "take_attendance":
+        selectClassToTakeAttendanceUi(root)
+    elif ui == "attendance_taking":
+        attendanceTakingUi(root)
 
 
 def showLoginUi(root):
@@ -26,11 +38,13 @@ def showLoginUi(root):
     username_label.grid(sticky='w', row=1, column=0, padx=5, pady=5)
     username_entry = Entry(login_frame, font=("Helvetica", 18), width=20)
     username_entry.grid(row=1, column=1, padx=5, pady=5)
+    username_entry.insert(0, "masum")
 
     password_label = Label(login_frame, text="Password:", style="TSLabel.TLabel")
     password_label.grid(sticky='w', row=2, column=0, padx=5, pady=5)
     password_entry = Entry(login_frame, font=("Helvetica", 18), width=20, show="*")
     password_entry.grid(row=2, column=1, padx=5, pady=5)
+    password_entry.insert(0, "12345678")
 
     login_button = Button(login_frame, text="Login", style="TButton")
     login_button.grid(row=3, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
@@ -54,6 +68,8 @@ def login(root, frame, username, password, warning_text):
     if res["status"] is False:
         warning_text.set(res["message"])
     else:
+        global current_user
+        current_user = res["data"]
         toggle(root, frame, "main")
 
 
@@ -122,8 +138,153 @@ def showMainUi(root):
     home_frame.pack()
 
     welcome_label = Label(home_frame, text="Welcome", style="TLabel", width=15, anchor="center")
-    welcome_label.grid(row=0, column=0, columnspan=2, pady=20)
+    welcome_label.grid(row=0, column=0, pady=20)
 
     logout_button = Button(home_frame, text="Logout", style="TButton")
-    logout_button.grid(row=1, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
+    logout_button.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
     logout_button.bind("<Button-1>", lambda event: toggle(root, home_frame, 'login'))
+
+    create_class_button = Button(home_frame, text="Create Class", style="TButton")
+    create_class_button.grid(row=1, column=0, sticky="ew", padx=5, pady=5)
+    create_class_button.bind("<Button-1>", lambda event: toggle(root, home_frame, 'create_class'))
+
+    take_attendance_button = Button(home_frame, text="Take Attendance", style="TButton")
+    take_attendance_button.grid(row=1, column=1, sticky="ew", padx=5, pady=5)
+    take_attendance_button.bind("<Button-1>", lambda event: toggle(root, home_frame, 'take_attendance'))
+
+    classes_label = Label(home_frame, text="Classes", style="TLabel", width=15, anchor="center")
+    classes_label.grid(row=2, column=0, columnspan=2, pady=20, sticky="w")
+
+    listbox = Listbox(home_frame, border=0, highlightthickness=0,
+                      font=("Helvetica", 18))
+    listbox.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
+    listbox.bind("<Double-Button-1>", lambda event: toggle(root, home_frame, 'class_detail'))
+
+    classes = getClassesByUsername(current_user["username"])
+
+    # keys = list(classes['data'].keys())
+    # values = list(classes['data'].values())
+
+    for value in classes["data"].values():
+        listbox.insert(END, value["class_name"])
+
+
+def showCreateClassUi(root):
+    warning_text = StringVar()
+    create_class_frame = Frame(root, style="TFrame")
+    create_class_frame.pack()
+
+    create_class_label = Label(create_class_frame, text="Create Class", style="TLabel", width=15, anchor="center")
+    create_class_label.grid(row=0, column=0, columnspan=2, pady=20)
+
+    class_name_label = Label(create_class_frame, text="Class Name:", style="TSLabel.TLabel")
+    class_name_label.grid(sticky='w', row=1, column=0, padx=5, pady=5)
+    class_name_entry = Entry(create_class_frame, font=("Helvetica", 18), width=20)
+    class_name_entry.grid(row=1, column=1, padx=5, pady=5)
+
+    class_code_label = Label(create_class_frame, text="Class Code:", style="TSLabel.TLabel")
+    class_code_label.grid(sticky='w', row=2, column=0, padx=5, pady=5)
+    class_code_entry = Entry(create_class_frame, font=("Helvetica", 18), width=20)
+    class_code_entry.grid(row=2, column=1, padx=5, pady=5)
+
+    class_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    class_code_entry.insert(0, class_code)
+    class_code_entry.configure(state=DISABLED)
+
+    continue_button = Button(create_class_frame, text="Continue", style="TButton")
+    continue_button.grid(row=3, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
+    continue_button.bind("<Button-1>",
+                         lambda event: createClass(root, create_class_frame, class_name_entry.get(),
+                                                   class_code_entry.get(), warning_text))
+
+    back_button = Button(create_class_frame, text="Back", style="TButton")
+    back_button.grid(row=4, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
+    back_button.bind("<Button-1>", lambda event: toggle(root, create_class_frame, 'main'))
+
+    warning_label = Label(create_class_frame, textvariable=warning_text, style="Warning.TLabel", anchor="center")
+    warning_label.grid(row=5, column=0, columnspan=2, pady=5)
+
+
+def createClass(root, frame, className, classCode, warning_text):
+    res = createClassValidator(className)
+    if res["status"] is False:
+        warning_text.set(res["message"])
+        return False
+    res = doCreateClass(className, classCode, current_user["username"])
+    if res["status"] is False:
+        warning_text.set(res["message"])
+    else:
+        toggle(root, frame, "main")
+
+
+def selectClassToTakeAttendanceUi(root):
+    select_class_frame = Frame(root, style="TFrame")
+    select_class_frame.pack()
+
+    classes = getClassesByUsername(current_user["username"])
+
+    select_class_label = Label(select_class_frame, text="Select Class", style="TLabel", width=15, anchor="center")
+    select_class_label.grid(row=0, column=0, columnspan=2, pady=20)
+
+    listbox = Listbox(select_class_frame, border=0, highlightthickness=0,
+                      font=("Helvetica", 18))
+    listbox.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
+    listbox.bind("<Double-Button-1>",
+                 lambda event: goToAttendanceTakingUi(root, select_class_frame, classes["data"].values(),
+                                                      listbox.curselection()[0]))
+
+    for value in classes["data"].values():
+        listbox.insert(END, value["class_name"])
+
+
+def goToAttendanceTakingUi(root, frame, classes, index):
+    global current_class
+    data_list = list(classes)
+    current_class = data_list[index]
+    toggle(root, frame, "attendance_taking")
+
+
+def attendanceTakingUi(root):
+    attendance_taking_frame = Frame(root, style="TFrame")
+    attendance_taking_frame.pack()
+
+    take_attendance_label = Label(attendance_taking_frame, text=current_class['class_name'] + " Today's Attendance",
+                                  style="TLabel", width=30,
+                                  anchor="center")
+    take_attendance_label.grid(row=0, column=0, columnspan=2, pady=20)
+
+    listbox = Listbox(attendance_taking_frame, border=0, highlightthickness=0,
+                      font=("Helvetica", 18))
+    listbox.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
+
+    close_button = Button(attendance_taking_frame, text="Close", style="TButton")
+    close_button.grid(row=2, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
+    close_button.bind("<Button-1>", lambda event: closeAttendance(root, attendance_taking_frame, "main"))
+    openAttendanceInstance(listbox)
+
+
+def openAttendanceInstance(listbox):
+    current_date = datetime.now().strftime("%Y%m%d")
+    model = {
+        "date": current_date,
+        "class_code": current_class['class_code'],
+        "open": True,
+        "attendance": []
+    }
+    res = getDb().child("attendance").child(current_class['class_code']).child(current_date).set(model)
+    getDb().child("attendance").child(current_class['class_code']).child(current_date).child("attendance").stream(
+        lambda event: onAttendanceUpdate(event, listbox))
+
+
+def onAttendanceUpdate(event, listbox):
+    print(event)
+    data = event["data"]
+    if data is not None:
+        for key, value in data.items():
+            listbox.insert(END, value)
+
+
+def closeAttendance(root, frame, next_frame):
+    current_date = datetime.now().strftime("%Y%m%d")
+    res = getDb().child("attendance").child(current_class['class_code']).child(current_date).child("open").set(False)
+    toggle(root, frame, next_frame)
