@@ -278,10 +278,8 @@ def openAttendanceInstance(listbox):
 
 def onAttendanceUpdate(event, listbox):
     print(event)
-    data = event["data"]
-    if data is not None:
-        for key, value in data.items():
-            listbox.insert(END, value)
+    if event["data"] is not None:
+        listbox.insert(END, event["data"])
 
 
 def closeAttendance(root, frame, next_frame):
