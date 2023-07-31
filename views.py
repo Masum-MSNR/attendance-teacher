@@ -6,8 +6,13 @@ from tkinter.ttk import *
 from validators import *
 from funcs import *
 
+import customtkinter as ctk
+
 current_user = {}
 current_class = {}
+
+g_current_date = ""
+current_attendances = []
 
 
 def toggle(root, frame, ui):
@@ -24,6 +29,10 @@ def toggle(root, frame, ui):
         selectClassToTakeAttendanceUi(root)
     elif ui == "attendance_taking":
         attendanceTakingUi(root)
+    elif ui == "attendances":
+        classAttendanceUi(root)
+    elif ui == "attendance_by_date":
+        attendanceByDateUi(root)
 
 
 def showLoginUi(root):
@@ -36,6 +45,7 @@ def showLoginUi(root):
 
     username_label = Label(login_frame, text="Username:", style="TSLabel.TLabel")
     username_label.grid(sticky='w', row=1, column=0, padx=5, pady=5)
+
     username_entry = Entry(login_frame, font=("Helvetica", 18), width=20)
     username_entry.grid(row=1, column=1, padx=5, pady=5)
     username_entry.insert(0, "masum")
@@ -158,15 +168,19 @@ def showMainUi(root):
     listbox = Listbox(home_frame, border=0, highlightthickness=0,
                       font=("Helvetica", 18))
     listbox.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
-    listbox.bind("<Double-Button-1>", lambda event: toggle(root, home_frame, 'class_detail'))
+    listbox.bind("<Double-Button-1>",
+                 lambda event: goShowAttendanceUi(root, home_frame, classes["data"].values(), listbox.curselection()))
 
     classes = getClassesByUsername(current_user["username"])
 
-    # keys = list(classes['data'].keys())
-    # values = list(classes['data'].values())
-
     for value in classes["data"].values():
         listbox.insert(END, value["class_name"])
+
+
+def goShowAttendanceUi(root, frame, classes, index):
+    global current_class
+    current_class = list(classes)[index[0]]
+    toggle(root, frame, 'attendances')
 
 
 def showCreateClassUi(root):
@@ -257,9 +271,9 @@ def attendanceTakingUi(root):
                       font=("Helvetica", 18))
     listbox.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
 
-    close_button = Button(attendance_taking_frame, text="Close", style="TButton")
-    close_button.grid(row=2, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
-    close_button.bind("<Button-1>", lambda event: closeAttendance(root, attendance_taking_frame, "main"))
+    back_button = Button(attendance_taking_frame, text="Close", style="TButton")
+    back_button.grid(row=2, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
+    back_button.bind("<Button-1>", lambda event: closeAttendance(root, attendance_taking_frame, "main"))
     openAttendanceInstance(listbox)
 
 
@@ -286,3 +300,77 @@ def closeAttendance(root, frame, next_frame):
     current_date = datetime.now().strftime("%Y%m%d")
     res = getDb().child("attendance").child(current_class['class_code']).child(current_date).child("open").set(False)
     toggle(root, frame, next_frame)
+
+
+def classAttendanceUi(root):
+    class_attendance_frame = Frame(root, style="TFrame")
+    class_attendance_frame.pack()
+
+    class_attendance_label = Label(class_attendance_frame, text=current_class['class_name'] + " Attendance",
+                                   style="TLabel", width=30,
+                                   anchor="center")
+    class_attendance_label.grid(row=0, column=0, columnspan=2, pady=20)
+
+    listbox = Listbox(class_attendance_frame, border=0, highlightthickness=0,
+                      font=("Helvetica", 18))
+    listbox.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
+    listbox.bind("<Double-Button-1>",
+                 lambda event: goAttendanceByDateUi(root, class_attendance_frame, data, listbox.curselection()[0]))
+
+    back_button = Button(class_attendance_frame, text="Back", style="TButton")
+    back_button.grid(row=2, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
+    back_button.bind("<Button-1>", lambda event: toggle(root, class_attendance_frame, "main"))
+
+    attendances = getAttendancesByClassCode(current_class['class_code'])
+    data = attendances["data"]
+    dates = data.keys()
+    dates = list(dates)
+    dates.reverse()
+    for value in dates:
+        lDate = datetime.strptime(value, "%Y%m%d").strftime("%d-%m-%Y")
+        try:
+            if data[value]["attendance"] is not None:
+                print(data[value]["attendance"])
+        except:
+            pass
+
+        listbox.insert(END, lDate)
+
+
+def goAttendanceByDateUi(root, frame, attendances, index):
+    global current_attendances
+    data_list = list(attendances.keys())
+    data_list.reverse()
+    values = attendances.values()
+    values = list(values)
+    values.reverse()
+
+    try:
+        current_attendances = values[index]["attendance"]
+    except:
+        current_attendances = []
+    global g_current_date
+    g_current_date = data_list[index]
+    toggle(root, frame, "attendance_by_date")
+
+
+def attendanceByDateUi(root):
+    attendance_by_date_frame = Frame(root, style="TFrame")
+    attendance_by_date_frame.pack()
+
+    lDate = datetime.strptime(g_current_date, "%Y%m%d").strftime("%d-%m-%Y")
+
+    attendance_by_date_label = Label(attendance_by_date_frame,
+                                     text=current_class['class_name'] + " " + lDate + " Attendance",
+                                     style="TLabel", width=30, anchor="center")
+    attendance_by_date_label.grid(row=0, column=0, columnspan=2, pady=20)
+
+    listbox = Listbox(attendance_by_date_frame, border=0, highlightthickness=0,
+                      font=("Helvetica", 18))
+    listbox.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
+    for value in current_attendances:
+        listbox.insert(END, value)
+
+    back_button = Button(attendance_by_date_frame, text="Back", style="TButton")
+    back_button.grid(row=2, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
+    back_button.bind("<Button-1>", lambda event: toggle(root, attendance_by_date_frame, "main"))

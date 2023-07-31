@@ -13,7 +13,7 @@ style = Style()
 style.configure("TLabel", font=("Helvetica", 20, 'bold'), background="#fff")
 style.configure("TSLabel.TLabel", font=("Helvetica", 16), background="#fff")
 style.configure("Warning.TLabel", font=("Helvetica", 10), background="#fff", foreground="red")
-style.configure("TEntry", font=("Helvetica", 20), background="#fff")
+style.configure("TEntry", font=("Helvetica", 20), background="#000")
 style.configure("TButton", font=("Helvetica", 18, 'bold'), background="#ccc")
 style.configure("TFrame", background="#fff", borderwidth=2, relief="flat", bordercolor="#fff")
 

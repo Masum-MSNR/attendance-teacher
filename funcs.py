@@ -56,3 +56,11 @@ def getClassByCode(class_code):
         return {"status": False, "message": "Class not found"}
     else:
         return {"status": True, "data": res}
+
+
+def getAttendancesByClassCode(class_code):
+    res = getDb().child("attendance").child(class_code).order_by_key().get().val()
+    if res is None:
+        return {"status": False, "message": "Attendance not found"}
+    else:
+        return {"status": True, "data": res}
