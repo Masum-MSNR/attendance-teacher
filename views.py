@@ -3,7 +3,7 @@ import random
 from datetime import date, datetime
 from tkinter import *
 from tkinter.ttk import *
-
+from PIL import Image
 from scrollable import ScrollableLabelButtonFrame
 from validators import *
 from funcs import *
@@ -269,7 +269,8 @@ def showMainUi(root):
 
     classes = getClassesByUsername(current_user["username"])
 
-    classes_scrollbar = ScrollableLabelButtonFrame(root, frame, classes["data"].values(), command=goShowAttendanceUi, width=380,
+    classes_scrollbar = ScrollableLabelButtonFrame(root, frame, classes["data"].values(), command=goShowAttendanceUi,
+                                                   width=380,
                                                    height=400)
     classes_scrollbar.place(x=50, y=215)
 
@@ -285,39 +286,63 @@ def goShowAttendanceUi(root, frame, classes, index):
 
 
 def showCreateClassUi(root):
-    warning_text = StringVar()
-    create_class_frame = Frame(root, style="TFrame")
-    create_class_frame.pack()
+    frame = ctk.CTkFrame(root)
+    frame.pack(fill="both", expand=True)
+    warning_text = ctk.StringVar()
 
-    create_class_label = Label(create_class_frame, text="Create Class", style="TLabel", width=15, anchor="center")
-    create_class_label.grid(row=0, column=0, columnspan=2, pady=20)
+    im = Image.open("back-arrow.png")
+    im = ctk.CTkImage(im)
+    back_arrow = ctk.CTkButton(frame,
+                               image=im,
+                               fg_color="transparent",
+                               width=50,
+                               text=""
+                               )
+    back_arrow.place(x=50, y=30)
+    back_arrow.bind("<Button-1>", lambda event: toggle(root, frame, 'main'))
 
-    class_name_label = Label(create_class_frame, text="Class Name:", style="TSLabel.TLabel")
-    class_name_label.grid(sticky='w', row=1, column=0, padx=5, pady=5)
-    class_name_entry = Entry(create_class_frame, font=("Helvetica", 18), width=20)
-    class_name_entry.grid(row=1, column=1, padx=5, pady=5)
+    title = ctk.CTkLabel(frame,
+                         text="Create Class",
+                         font=("Arial", 30, 'bold'),
+                         text_color="white",
+                         corner_radius=10,
+                         width=300,
+                         )
+    title.pack(pady=15, ipady=10)
 
-    class_code_label = Label(create_class_frame, text="Class Code:", style="TSLabel.TLabel")
-    class_code_label.grid(sticky='w', row=2, column=0, padx=5, pady=5)
-    class_code_entry = Entry(create_class_frame, font=("Helvetica", 18), width=20)
-    class_code_entry.grid(row=2, column=1, padx=5, pady=5)
+    class_name_entry = ctk.CTkEntry(frame,
+                                    width=400,
+                                    placeholder_text="Class Name",
+                                    placeholder_text_color="grey",
+                                    corner_radius=10,
+                                    )
+    class_name_entry.pack(pady=15, ipady=10)
+
+    class_code_entry = ctk.CTkEntry(frame,
+                                    width=400,
+                                    placeholder_text="Class Code",
+                                    placeholder_text_color="grey",
+                                    corner_radius=10,
+                                    )
+    class_code_entry.pack(pady=15, ipady=10)
 
     class_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
     class_code_entry.insert(0, class_code)
     class_code_entry.configure(state=DISABLED)
 
-    continue_button = Button(create_class_frame, text="Continue", style="TButton")
-    continue_button.grid(row=3, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
+    continue_button = ctk.CTkButton(frame,
+                                    text="Continue",
+                                    width=400,
+                                    corner_radius=10,
+                                    font=("Arial", 18, 'bold'),
+                                    )
+    continue_button.pack(pady=15, ipady=10)
     continue_button.bind("<Button-1>",
-                         lambda event: createClass(root, create_class_frame, class_name_entry.get(),
-                                                   class_code_entry.get(), warning_text))
+                         lambda event: createClass(root, frame, class_name_entry.get(), class_code_entry.get(),
+                                                   warning_text))
 
-    back_button = Button(create_class_frame, text="Back", style="TButton")
-    back_button.grid(row=4, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
-    back_button.bind("<Button-1>", lambda event: toggle(root, create_class_frame, 'main'))
-
-    warning_label = Label(create_class_frame, textvariable=warning_text, style="Warning.TLabel", anchor="center")
-    warning_label.grid(row=5, column=0, columnspan=2, pady=5)
+    warning_label = ctk.CTkLabel(frame, textvariable=warning_text, text_color="red", anchor="center")
+    warning_label.pack()
 
 
 def createClass(root, frame, className, classCode, warning_text):

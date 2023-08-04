@@ -12,7 +12,13 @@ firebaseConfig = {
 }
 
 db = pyrebase.initialize_app(firebaseConfig)
+connection = None
 
 
 def getDb():
-    return db.database()
+    global connection
+    if connection is None:
+        connection = db.database()
+        return connection
+    else:
+        return connection
