@@ -12,17 +12,21 @@ class ScrollableLabelButtonFrame(ctk.CTkScrollableFrame):
         self.command = command
         self.label_list = []
         self.button_list = []
+        self.code_list = []
 
-    def add_item(self, item):
+    def add_item(self, item, item2):
         label = ctk.CTkLabel(self, text=item, compound="left", padx=5, anchor="w")
+        code = ctk.CTkLabel(self, text=item2, compound="left", padx=5, anchor="w")
         button = ctk.CTkButton(self, text="View Attendance", height=24)
         if self.command is not None:
             button.configure(
                 command=lambda: self.command(self.root, self.frame, self.classes, self.label_list.index(label)))
         label.grid(row=len(self.label_list), column=0, pady=(0, 10), sticky="w")
-        button.grid(row=len(self.button_list), column=1, pady=(0, 10), padx=5)
+        code.grid(row=len(self.code_list), column=1, pady=(0, 10), padx=5)
+        button.grid(row=len(self.button_list), column=2, pady=(0, 10), padx=5)
         self.label_list.append(label)
         self.button_list.append(button)
+        self.code_list.append(code)
 
 
 class ScrollableButtonFrame(ctk.CTkScrollableFrame):

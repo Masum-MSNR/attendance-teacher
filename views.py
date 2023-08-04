@@ -1,13 +1,11 @@
-import string
 import random
-from datetime import date, datetime
+import string
+from datetime import datetime
 from tkinter import *
-from tkinter.ttk import *
 from PIL import Image
+from funcs import *
 from scrollable import *
 from validators import *
-from funcs import *
-import customtkinter as ctk
 
 current_user = {}
 current_class = {}
@@ -279,7 +277,7 @@ def showMainUi(root):
     classes_scrollbar.place(x=50, y=215)
 
     for value in classes["data"].values():
-        classes_scrollbar.add_item(value["class_name"])
+        classes_scrollbar.add_item(value["class_name"], value["class_code"])
 
 
 def goShowAttendanceUi(root, frame, classes, index):
@@ -475,17 +473,17 @@ def classAttendanceUi(root):
                                width=50,
                                text=""
                                )
-    back_arrow.place(x=50, y=30)
+    back_arrow.pack(pady=(15, 0), padx=50, anchor="nw")
     back_arrow.bind("<Button-1>", lambda event: toggle(root, frame, 'main'))
 
     title = ctk.CTkLabel(frame,
                          text=current_class['class_name'] + " Attendance",
-                         font=("Arial", 30, 'bold'),
+                         font=("Arial", 25, 'bold'),
                          text_color="white",
                          corner_radius=10,
                          width=300,
                          )
-    title.pack(pady=15, ipady=10)
+    title.pack(pady=(0,15), ipady=10)
 
     attendances = getAttendancesByClassCode(current_class['class_code'])
     data = attendances["data"]
@@ -500,7 +498,7 @@ def classAttendanceUi(root):
                                          width=380,
                                          height=400,
                                          )
-    dates_scroll.place(x=50, y=75)
+    dates_scroll.pack()
 
     for value in dates:
         lDate = datetime.strptime(value, "%Y%m%d").strftime("%d-%m-%Y")
@@ -542,19 +540,19 @@ def attendanceByDateUi(root):
                                width=50,
                                text=""
                                )
-    back_arrow.place(x=50, y=30)
-    back_arrow.bind("<Button-1>", lambda event: toggle(root, frame, 'class_attendance'))
+    back_arrow.pack(pady=(15, 0), padx=50, anchor="nw")
+    back_arrow.bind("<Button-1>", lambda event: toggle(root, frame, 'attendances'))
 
     lDate = datetime.strptime(g_current_date, "%Y%m%d").strftime("%d-%m-%Y")
 
     title = ctk.CTkLabel(frame,
                          text=current_class['class_name'] + " " + lDate + " Attendance",
-                         font=("Arial", 30, 'bold'),
+                         font=("Arial", 20, 'bold'),
                          text_color="white",
                          corner_radius=10,
                          width=300,
                          )
-    title.pack(pady=15, ipady=10)
+    title.pack(pady=(0, 15), ipady=10)
 
     rolls = ScrollableLabelFrame(
         frame,
