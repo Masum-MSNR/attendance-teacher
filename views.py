@@ -5,7 +5,6 @@ from tkinter import *
 from tkinter.ttk import *
 from validators import *
 from funcs import *
-
 import customtkinter as ctk
 
 current_user = {}
@@ -36,37 +35,64 @@ def toggle(root, frame, ui):
 
 
 def showLoginUi(root):
-    warning_text = StringVar()
-    login_frame = Frame(root, style="TFrame")
-    login_frame.pack()
+    frame = ctk.CTkFrame(root)
+    frame.pack(fill="both", expand=True)
 
-    login_label = Label(login_frame, text="Login", style="TLabel", width=15, anchor="center")
-    login_label.grid(row=0, column=0, columnspan=2, pady=20)
+    warning_text = ctk.StringVar()
 
-    username_label = Label(login_frame, text="Username:", style="TSLabel.TLabel")
-    username_label.grid(sticky='w', row=1, column=0, padx=5, pady=5)
+    title = ctk.CTkLabel(frame,
+                         text="Login",
+                         font=("Arial", 30, 'bold'),
+                         text_color="white",
+                         corner_radius=10,
+                         width=400,
+                         )
+    title.pack(pady=15, ipady=10)
 
-    username_entry = Entry(login_frame, font=("Helvetica", 18), width=20)
-    username_entry.grid(row=1, column=1, padx=5, pady=5)
-    username_entry.insert(0, "masum")
+    username_entry = ctk.CTkEntry(frame,
+                                  width=400,
+                                  placeholder_text="Username",
+                                  placeholder_text_color="grey",
+                                  corner_radius=10
+                                  )
+    username_entry.pack(pady=15, ipady=10)
 
-    password_label = Label(login_frame, text="Password:", style="TSLabel.TLabel")
-    password_label.grid(sticky='w', row=2, column=0, padx=5, pady=5)
-    password_entry = Entry(login_frame, font=("Helvetica", 18), width=20, show="*")
-    password_entry.grid(row=2, column=1, padx=5, pady=5)
-    password_entry.insert(0, "12345678")
+    password_entry = ctk.CTkEntry(frame,
+                                  width=400,
+                                  placeholder_text="Password",
+                                  placeholder_text_color="grey",
+                                  corner_radius=10,
+                                  show="*"
+                                  )
+    password_entry.pack(pady=15, ipady=10)
 
-    login_button = Button(login_frame, text="Login", style="TButton")
-    login_button.grid(row=3, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
+    login_button = ctk.CTkButton(frame,
+                                 text="Login",
+                                 width=400,
+                                 corner_radius=10,
+                                 font=("Arial", 18, 'bold'),
+                                 )
+    login_button.pack(pady=15, ipady=10)
     login_button.bind("<Button-1>",
-                      lambda event: login(root, login_frame, username_entry.get(), password_entry.get(), warning_text))
+                      lambda event: login(root, frame, username_entry.get(), password_entry.get(), warning_text))
 
-    register_button = Button(login_frame, text="Register", style="TButton")
-    register_button.grid(row=4, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
-    register_button.bind("<Button-1>", lambda event: toggle(root, login_frame, 'register'))
+    or_label = ctk.CTkLabel(frame,
+                            text="or",
+                            font=("Arial", 15, 'bold'),
+                            )
 
-    warning_label = Label(login_frame, textvariable=warning_text, style="Warning.TLabel", anchor="center")
-    warning_label.grid(row=8, column=0, columnspan=2, pady=5)
+    or_label.pack()
+
+    register_button = ctk.CTkButton(frame,
+                                    text="Register",
+                                    fg_color="transparent",
+                                    hover=False,
+                                    )
+    register_button.pack()
+    register_button.bind("<Button-1>", lambda event: toggle(root, frame, "register"))
+
+    warning_label = ctk.CTkLabel(frame, textvariable=warning_text, text_color="red", anchor="center")
+    warning_label.pack()
 
 
 def login(root, frame, username, password, warning_text):
@@ -84,51 +110,91 @@ def login(root, frame, username, password, warning_text):
 
 
 def showRegisterUi(root):
-    warning_text = StringVar()
-    reg_frame = Frame(root, style="TFrame")
-    reg_frame.pack()
+    frame = ctk.CTkFrame(root)
+    frame.pack(fill="both", expand=True)
 
-    login_label = Label(reg_frame, text="Registration", style="TLabel", width=15, anchor="center")
-    login_label.grid(row=0, column=0, columnspan=2, pady=20)
+    warning_text = ctk.StringVar()
 
-    username_label = Label(reg_frame, text="Username:", style="TSLabel.TLabel")
-    username_label.grid(sticky='w', row=1, column=0, padx=5, pady=5)
-    username_entry = Entry(reg_frame, font=("Helvetica", 18), width=20)
-    username_entry.grid(row=1, column=1, padx=5, pady=5)
+    title = ctk.CTkLabel(frame,
+                         text="Registration",
+                         font=("Arial", 30, 'bold'),
+                         text_color="white",
+                         corner_radius=10,
+                         width=400,
+                         )
+    title.pack(pady=15, ipady=10)
 
-    fullname_label = Label(reg_frame, text="Fullname:", style="TSLabel.TLabel")
-    fullname_label.grid(sticky='w', row=2, column=0, padx=5, pady=5)
-    fullname_entry = Entry(reg_frame, font=("Helvetica", 18), width=20)
-    fullname_entry.grid(row=2, column=1, padx=5, pady=5)
+    username_entry = ctk.CTkEntry(frame,
+                                  width=400,
+                                  placeholder_text="Username",
+                                  placeholder_text_color="grey",
+                                  corner_radius=10
+                                  )
+    username_entry.pack(pady=15, ipady=10)
 
-    email_label = Label(reg_frame, text="Email:", style="TSLabel.TLabel")
-    email_label.grid(sticky='w', row=3, column=0, padx=5, pady=5)
-    email_entry = Entry(reg_frame, font=("Helvetica", 18), width=20)
-    email_entry.grid(row=3, column=1, padx=5, pady=5)
+    fullname_entry = ctk.CTkEntry(frame,
+                                  width=400,
+                                  placeholder_text="Fullname",
+                                  placeholder_text_color="grey",
+                                  corner_radius=10
+                                  )
+    fullname_entry.pack(pady=15, ipady=10)
 
-    password_label = Label(reg_frame, text="Password:", style="TSLabel.TLabel")
-    password_label.grid(sticky='w', row=4, column=0, padx=5, pady=5)
-    password_entry = Entry(reg_frame, font=("Helvetica", 18), width=20, show="*")
-    password_entry.grid(row=4, column=1, padx=5, pady=5)
+    email_entry = ctk.CTkEntry(frame,
+                               width=400,
+                               placeholder_text="Email",
+                               placeholder_text_color="grey",
+                               corner_radius=10
+                               )
+    email_entry.pack(pady=15, ipady=10)
 
-    confirm_pass_label = Label(reg_frame, text="Confirm Password:", style="TSLabel.TLabel")
-    confirm_pass_label.grid(sticky='w', row=5, column=0, padx=5, pady=5)
-    confirm_pass_entry = Entry(reg_frame, font=("Helvetica", 18), width=20, show="*")
-    confirm_pass_entry.grid(row=5, column=1, padx=5, pady=5)
+    password_entry = ctk.CTkEntry(frame,
+                                  width=400,
+                                  placeholder_text="Password",
+                                  placeholder_text_color="grey",
+                                  corner_radius=10,
+                                  show="*"
+                                  )
+    password_entry.pack(pady=15, ipady=10)
 
-    continue_button = Button(reg_frame, text="Continue", style="TButton")
-    continue_button.grid(row=6, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
+    confirm_password_entry = ctk.CTkEntry(frame,
+                                          width=400,
+                                          placeholder_text="Confirm Password",
+                                          placeholder_text_color="grey",
+                                          corner_radius=10,
+                                          show="*"
+                                          )
+    confirm_password_entry.pack(pady=15, ipady=10)
+
+    continue_button = ctk.CTkButton(frame,
+                                    text="Continue",
+                                    width=400,
+                                    corner_radius=10,
+                                    font=("Arial", 18, 'bold'),
+                                    )
+    continue_button.pack(pady=15, ipady=10)
     continue_button.bind("<Button-1>",
-                         lambda event: register(root, reg_frame, username_entry.get(), fullname_entry.get(),
-                                                email_entry.get(), password_entry.get(), confirm_pass_entry.get(),
+                         lambda event: register(root, frame, username_entry.get(), fullname_entry.get(),
+                                                email_entry.get(), password_entry.get(), confirm_password_entry.get(),
                                                 warning_text))
 
-    back_button = Button(reg_frame, text="Back", style="TButton")
-    back_button.grid(row=7, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
-    back_button.bind("<Button-1>", lambda event: toggle(root, reg_frame, 'login'))
+    or_label = ctk.CTkLabel(frame,
+                            text="or",
+                            font=("Arial", 15, 'bold'),
+                            )
 
-    warning_label = Label(reg_frame, textvariable=warning_text, style="Warning.TLabel", anchor="center")
-    warning_label.grid(row=8, column=0, columnspan=2, pady=5)
+    or_label.pack()
+
+    login_button = ctk.CTkButton(frame,
+                                 text="Login",
+                                 fg_color="transparent",
+                                 hover=False,
+                                 )
+    login_button.pack()
+    login_button.bind("<Button-1>", lambda event: toggle(root, frame, "login"))
+
+    warning_label = ctk.CTkLabel(frame, textvariable=warning_text, text_color="red", anchor="center")
+    warning_label.pack()
 
 
 def register(root, frame, username, fullname, email, password, confirm_pass, warning_text):
@@ -144,37 +210,105 @@ def register(root, frame, username, fullname, email, password, confirm_pass, war
 
 
 def showMainUi(root):
-    home_frame = Frame(root, style="TFrame")
-    home_frame.pack()
+    frame = ctk.CTkFrame(root)
+    frame.pack(fill="both", expand=True)
 
-    welcome_label = Label(home_frame, text="Welcome", style="TLabel", width=15, anchor="center")
-    welcome_label.grid(row=0, column=0, pady=20)
+    welcome_label = ctk.CTkLabel(frame,
+                                 text="Welcome",
+                                 font=("Arial", 30, 'bold'),
+                                 text_color="white",
+                                 anchor="sw",
+                                 height=40,
+                                 width=190,
+                                 )
 
-    logout_button = Button(home_frame, text="Logout", style="TButton")
-    logout_button.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
-    logout_button.bind("<Button-1>", lambda event: toggle(root, home_frame, 'login'))
+    welcome_label.place(x=50, y=15)
 
-    create_class_button = Button(home_frame, text="Create Class", style="TButton")
-    create_class_button.grid(row=1, column=0, sticky="ew", padx=5, pady=5)
-    create_class_button.bind("<Button-1>", lambda event: toggle(root, home_frame, 'create_class'))
+    logout_button = ctk.CTkButton(frame,
+                                  text="Logout",
+                                  width=190,
+                                  corner_radius=10,
+                                  height=40,
+                                  font=("Arial", 18, 'bold'),
+                                  )
+    logout_button.place(x=450, y=15, anchor="ne")
+    logout_button.bind("<Button-1>", lambda event: toggle(root, frame, 'login'))
 
-    take_attendance_button = Button(home_frame, text="Take Attendance", style="TButton")
-    take_attendance_button.grid(row=1, column=1, sticky="ew", padx=5, pady=5)
-    take_attendance_button.bind("<Button-1>", lambda event: toggle(root, home_frame, 'take_attendance'))
+    create_class_button = ctk.CTkButton(frame,
+                                        text="Create Class",
+                                        width=190,
+                                        corner_radius=10,
+                                        height=40,
+                                        font=("Arial", 18, 'bold'),
+                                        )
+    create_class_button.place(x=50, y=75)
+    create_class_button.bind("<Button-1>", lambda event: toggle(root, frame, 'create_class'))
 
-    classes_label = Label(home_frame, text="Classes", style="TLabel", width=15, anchor="center")
-    classes_label.grid(row=2, column=0, columnspan=2, pady=20, sticky="w")
+    take_attendance_button = ctk.CTkButton(frame,
+                                           text="Take Attendance",
+                                           width=190,
+                                           corner_radius=10,
+                                           height=40,
+                                           font=("Arial", 18, 'bold'),
+                                           )
+    take_attendance_button.place(x=450, y=75, anchor="ne")
+    take_attendance_button.bind("<Button-1>", lambda event: toggle(root, frame, 'take_attendance'))
 
-    listbox = Listbox(home_frame, border=0, highlightthickness=0,
-                      font=("Helvetica", 18))
-    listbox.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
-    listbox.bind("<Double-Button-1>",
-                 lambda event: goShowAttendanceUi(root, home_frame, classes["data"].values(), listbox.curselection()))
+    classes_label = ctk.CTkLabel(frame,
+                                 text="Classes",
+                                 font=("Arial", 20, 'bold'),
+                                 text_color="white",
+                                 fg_color="green",
+                                 corner_radius=10,
+                                 width=400,
+                                 height=40,
+                                 )
+    classes_label.place(x=50, y=150)
 
-    classes = getClassesByUsername(current_user["username"])
+    classes_frame = ctk.CTkFrame(frame,
+                                 width=400,
+                                 height=400,
+                                 corner_radius=10,
+                                 )
+    classes_frame.place(x=50, y=215)
 
-    for value in classes["data"].values():
-        listbox.insert(END, value["class_name"])
+    listbox = ctk.CTkListbox(classes_frame,
+                             width=400,
+                             height=400,
+                             corner_radius=10,
+                             )
+
+    # home_frame = Frame(root, style="TFrame")
+    # home_frame.pack()
+    #
+    # welcome_label = Label(home_frame, text="Welcome", style="TLabel", width=15, anchor="center")
+    # welcome_label.grid(row=0, column=0, pady=20)
+    #
+    # logout_button = Button(home_frame, text="Logout", style="TButton")
+    # logout_button.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+    # logout_button.bind("<Button-1>", lambda event: toggle(root, home_frame, 'login'))
+    #
+    # create_class_button = Button(home_frame, text="Create Class", style="TButton")
+    # create_class_button.grid(row=1, column=0, sticky="ew", padx=5, pady=5)
+    # create_class_button.bind("<Button-1>", lambda event: toggle(root, home_frame, 'create_class'))
+    #
+    # take_attendance_button = Button(home_frame, text="Take Attendance", style="TButton")
+    # take_attendance_button.grid(row=1, column=1, sticky="ew", padx=5, pady=5)
+    # take_attendance_button.bind("<Button-1>", lambda event: toggle(root, home_frame, 'take_attendance'))
+    #
+    # classes_label = Label(home_frame, text="Classes", style="TLabel", width=15, anchor="center")
+    # classes_label.grid(row=2, column=0, columnspan=2, pady=20, sticky="w")
+    #
+    # listbox = Listbox(home_frame, border=0, highlightthickness=0,
+    #                   font=("Helvetica", 18))
+    # listbox.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
+    # listbox.bind("<Double-Button-1>",
+    #              lambda event: goShowAttendanceUi(root, home_frame, classes["data"].values(), listbox.curselection()))
+    #
+    # classes = getClassesByUsername(current_user["username"])
+    #
+    # for value in classes["data"].values():
+    #     listbox.insert(END, value["class_name"])
 
 
 def goShowAttendanceUi(root, frame, classes, index):
