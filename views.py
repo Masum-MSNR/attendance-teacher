@@ -4,7 +4,7 @@ from datetime import date, datetime
 from tkinter import *
 from tkinter.ttk import *
 from PIL import Image
-from scrollable import ScrollableLabelButtonFrame
+from scrollable import *
 from validators import *
 from funcs import *
 import customtkinter as ctk
@@ -269,9 +269,13 @@ def showMainUi(root):
 
     classes = getClassesByUsername(current_user["username"])
 
-    classes_scrollbar = ScrollableLabelButtonFrame(root, frame, classes["data"].values(), command=goShowAttendanceUi,
+    classes_scrollbar = ScrollableLabelButtonFrame(root,
+                                                   frame,
+                                                   classes["data"].values(),
+                                                   command=goShowAttendanceUi,
                                                    width=380,
-                                                   height=400)
+                                                   height=400,
+                                                   )
     classes_scrollbar.place(x=50, y=215)
 
     for value in classes["data"].values():
@@ -358,23 +362,42 @@ def createClass(root, frame, className, classCode, warning_text):
 
 
 def selectClassToTakeAttendanceUi(root):
-    select_class_frame = Frame(root, style="TFrame")
-    select_class_frame.pack()
+    frame = ctk.CTkFrame(root)
+    frame.pack(fill="both", expand=True)
+
+    im = Image.open("back-arrow.png")
+    im = ctk.CTkImage(im)
+    back_arrow = ctk.CTkButton(frame,
+                               image=im,
+                               fg_color="transparent",
+                               width=50,
+                               text=""
+                               )
+    back_arrow.place(x=50, y=30)
+    back_arrow.bind("<Button-1>", lambda event: toggle(root, frame, 'main'))
+
+    title = ctk.CTkLabel(frame,
+                         text="Select Class",
+                         font=("Arial", 30, 'bold'),
+                         text_color="white",
+                         corner_radius=10,
+                         width=300,
+                         )
+    title.pack(pady=15, ipady=10)
 
     classes = getClassesByUsername(current_user["username"])
 
-    select_class_label = Label(select_class_frame, text="Select Class", style="TLabel", width=15, anchor="center")
-    select_class_label.grid(row=0, column=0, columnspan=2, pady=20)
-
-    listbox = Listbox(select_class_frame, border=0, highlightthickness=0,
-                      font=("Helvetica", 18))
-    listbox.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
-    listbox.bind("<Double-Button-1>",
-                 lambda event: goToAttendanceTakingUi(root, select_class_frame, classes["data"].values(),
-                                                      listbox.curselection()[0]))
+    classes_scrollbar = ScrollableButtonFrame(root,
+                                              frame,
+                                              classes["data"].values(),
+                                              command=goToAttendanceTakingUi,
+                                              width=380,
+                                              height=400,
+                                              )
+    classes_scrollbar.place(x=50, y=75)
 
     for value in classes["data"].values():
-        listbox.insert(END, value["class_name"])
+        classes_scrollbar.add_item(value["class_name"])
 
 
 def goToAttendanceTakingUi(root, frame, classes, index):
@@ -385,25 +408,37 @@ def goToAttendanceTakingUi(root, frame, classes, index):
 
 
 def attendanceTakingUi(root):
-    attendance_taking_frame = Frame(root, style="TFrame")
-    attendance_taking_frame.pack()
+    frame = ctk.CTkFrame(root)
+    frame.pack(fill="both", expand=True)
 
-    take_attendance_label = Label(attendance_taking_frame, text=current_class['class_name'] + " Today's Attendance",
-                                  style="TLabel", width=30,
-                                  anchor="center")
-    take_attendance_label.grid(row=0, column=0, columnspan=2, pady=20)
+    title = ctk.CTkLabel(frame,
+                         text=current_class['class_name'] + " Today's Attendance",
+                         font=("Arial", 30, 'bold'),
+                         text_color="white",
+                         corner_radius=10,
+                         width=400,
+                         )
+    title.pack(pady=15, ipady=10)
 
-    listbox = Listbox(attendance_taking_frame, border=0, highlightthickness=0,
-                      font=("Helvetica", 18))
-    listbox.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
+    rolls = ScrollableLabelFrame(
+        frame,
+        width=380,
+        height=400,
+    )
+    rolls.pack()
 
-    back_button = Button(attendance_taking_frame, text="Close", style="TButton")
-    back_button.grid(row=2, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
-    back_button.bind("<Button-1>", lambda event: closeAttendance(root, attendance_taking_frame, "main"))
-    openAttendanceInstance(listbox)
+    back_button = ctk.CTkButton(frame,
+                                text="Back",
+                                width=400,
+                                corner_radius=10,
+                                font=("Arial", 18, 'bold'),
+                                )
+    back_button.pack(pady=15, ipady=10)
+    back_button.bind("<Button-1>", lambda event: closeAttendance(root, frame, "main"))
+    openAttendanceInstance(rolls)
 
 
-def openAttendanceInstance(listbox):
+def openAttendanceInstance(rolls):
     current_date = datetime.now().strftime("%Y%m%d")
     model = {
         "date": current_date,
@@ -413,13 +448,13 @@ def openAttendanceInstance(listbox):
     }
     res = getDb().child("attendance").child(current_class['class_code']).child(current_date).set(model)
     getDb().child("attendance").child(current_class['class_code']).child(current_date).child("attendance").stream(
-        lambda event: onAttendanceUpdate(event, listbox))
+        lambda event: onAttendanceUpdate(event, rolls))
 
 
-def onAttendanceUpdate(event, listbox):
+def onAttendanceUpdate(event, rolls):
     print(event)
     if event["data"] is not None:
-        listbox.insert(END, event["data"])
+        rolls.add_item(event["data"])
 
 
 def closeAttendance(root, frame, next_frame):
@@ -429,38 +464,53 @@ def closeAttendance(root, frame, next_frame):
 
 
 def classAttendanceUi(root):
-    class_attendance_frame = Frame(root, style="TFrame")
-    class_attendance_frame.pack()
+    frame = ctk.CTkFrame(root)
+    frame.pack(fill="both", expand=True)
 
-    class_attendance_label = Label(class_attendance_frame, text=current_class['class_name'] + " Attendance",
-                                   style="TLabel", width=30,
-                                   anchor="center")
-    class_attendance_label.grid(row=0, column=0, columnspan=2, pady=20)
+    im = Image.open("back-arrow.png")
+    im = ctk.CTkImage(im)
+    back_arrow = ctk.CTkButton(frame,
+                               image=im,
+                               fg_color="transparent",
+                               width=50,
+                               text=""
+                               )
+    back_arrow.place(x=50, y=30)
+    back_arrow.bind("<Button-1>", lambda event: toggle(root, frame, 'main'))
 
-    listbox = Listbox(class_attendance_frame, border=0, highlightthickness=0,
-                      font=("Helvetica", 18))
-    listbox.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
-    listbox.bind("<Double-Button-1>",
-                 lambda event: goAttendanceByDateUi(root, class_attendance_frame, data, listbox.curselection()[0]))
-
-    back_button = Button(class_attendance_frame, text="Back", style="TButton")
-    back_button.grid(row=2, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
-    back_button.bind("<Button-1>", lambda event: toggle(root, class_attendance_frame, "main"))
+    title = ctk.CTkLabel(frame,
+                         text=current_class['class_name'] + " Attendance",
+                         font=("Arial", 30, 'bold'),
+                         text_color="white",
+                         corner_radius=10,
+                         width=300,
+                         )
+    title.pack(pady=15, ipady=10)
 
     attendances = getAttendancesByClassCode(current_class['class_code'])
     data = attendances["data"]
     dates = data.keys()
     dates = list(dates)
     dates.reverse()
+
+    dates_scroll = ScrollableLabelFrame2(root,
+                                         frame,
+                                         data,
+                                         command=goAttendanceByDateUi,
+                                         width=380,
+                                         height=400,
+                                         )
+    dates_scroll.place(x=50, y=75)
+
     for value in dates:
         lDate = datetime.strptime(value, "%Y%m%d").strftime("%d-%m-%Y")
         try:
             if data[value]["attendance"] is not None:
-                print(data[value]["attendance"])
+                pass
         except:
             pass
 
-        listbox.insert(END, lDate)
+        dates_scroll.add_item(lDate)
 
 
 def goAttendanceByDateUi(root, frame, attendances, index):
@@ -481,22 +531,37 @@ def goAttendanceByDateUi(root, frame, attendances, index):
 
 
 def attendanceByDateUi(root):
-    attendance_by_date_frame = Frame(root, style="TFrame")
-    attendance_by_date_frame.pack()
+    frame = ctk.CTkFrame(root)
+    frame.pack(fill="both", expand=True)
+
+    im = Image.open("back-arrow.png")
+    im = ctk.CTkImage(im)
+    back_arrow = ctk.CTkButton(frame,
+                               image=im,
+                               fg_color="transparent",
+                               width=50,
+                               text=""
+                               )
+    back_arrow.place(x=50, y=30)
+    back_arrow.bind("<Button-1>", lambda event: toggle(root, frame, 'class_attendance'))
 
     lDate = datetime.strptime(g_current_date, "%Y%m%d").strftime("%d-%m-%Y")
 
-    attendance_by_date_label = Label(attendance_by_date_frame,
-                                     text=current_class['class_name'] + " " + lDate + " Attendance",
-                                     style="TLabel", width=30, anchor="center")
-    attendance_by_date_label.grid(row=0, column=0, columnspan=2, pady=20)
+    title = ctk.CTkLabel(frame,
+                         text=current_class['class_name'] + " " + lDate + " Attendance",
+                         font=("Arial", 30, 'bold'),
+                         text_color="white",
+                         corner_radius=10,
+                         width=300,
+                         )
+    title.pack(pady=15, ipady=10)
 
-    listbox = Listbox(attendance_by_date_frame, border=0, highlightthickness=0,
-                      font=("Helvetica", 18))
-    listbox.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
+    rolls = ScrollableLabelFrame(
+        frame,
+        width=380,
+        height=400,
+    )
+    rolls.pack()
+
     for value in current_attendances:
-        listbox.insert(END, value)
-
-    back_button = Button(attendance_by_date_frame, text="Back", style="TButton")
-    back_button.grid(row=2, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
-    back_button.bind("<Button-1>", lambda event: toggle(root, attendance_by_date_frame, "main"))
+        rolls.add_item(value)
