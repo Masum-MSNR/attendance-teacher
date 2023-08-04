@@ -23,6 +23,6 @@ ctkRoot.geometry("500x650")
 # style.configure("TButton", font=("Helvetica", 18, 'bold'), background="#ccc")
 # style.configure("TFrame", background="#fff", borderwidth=2, relief="flat", bordercolor="#fff")
 
-showMainUi(ctkRoot)
+showLoginUi(ctkRoot)
 
 ctkRoot.mainloop()

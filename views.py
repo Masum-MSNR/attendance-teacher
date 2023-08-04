@@ -3,6 +3,8 @@ import random
 from datetime import date, datetime
 from tkinter import *
 from tkinter.ttk import *
+
+from scrollable import ScrollableLabelButtonFrame
 from validators import *
 from funcs import *
 import customtkinter as ctk
@@ -265,55 +267,20 @@ def showMainUi(root):
                                  )
     classes_label.place(x=50, y=150)
 
-    classes_frame = ctk.CTkFrame(frame,
-                                 width=400,
-                                 height=400,
-                                 corner_radius=10,
-                                 )
-    classes_frame.place(x=50, y=215)
+    classes = getClassesByUsername(current_user["username"])
 
-    listbox = ctk.CTkListbox(classes_frame,
-                             width=400,
-                             height=400,
-                             corner_radius=10,
-                             )
+    classes_scrollbar = ScrollableLabelButtonFrame(root, frame, classes["data"].values(), command=goShowAttendanceUi, width=380,
+                                                   height=400)
+    classes_scrollbar.place(x=50, y=215)
 
-    # home_frame = Frame(root, style="TFrame")
-    # home_frame.pack()
-    #
-    # welcome_label = Label(home_frame, text="Welcome", style="TLabel", width=15, anchor="center")
-    # welcome_label.grid(row=0, column=0, pady=20)
-    #
-    # logout_button = Button(home_frame, text="Logout", style="TButton")
-    # logout_button.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
-    # logout_button.bind("<Button-1>", lambda event: toggle(root, home_frame, 'login'))
-    #
-    # create_class_button = Button(home_frame, text="Create Class", style="TButton")
-    # create_class_button.grid(row=1, column=0, sticky="ew", padx=5, pady=5)
-    # create_class_button.bind("<Button-1>", lambda event: toggle(root, home_frame, 'create_class'))
-    #
-    # take_attendance_button = Button(home_frame, text="Take Attendance", style="TButton")
-    # take_attendance_button.grid(row=1, column=1, sticky="ew", padx=5, pady=5)
-    # take_attendance_button.bind("<Button-1>", lambda event: toggle(root, home_frame, 'take_attendance'))
-    #
-    # classes_label = Label(home_frame, text="Classes", style="TLabel", width=15, anchor="center")
-    # classes_label.grid(row=2, column=0, columnspan=2, pady=20, sticky="w")
-    #
-    # listbox = Listbox(home_frame, border=0, highlightthickness=0,
-    #                   font=("Helvetica", 18))
-    # listbox.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
-    # listbox.bind("<Double-Button-1>",
-    #              lambda event: goShowAttendanceUi(root, home_frame, classes["data"].values(), listbox.curselection()))
-    #
-    # classes = getClassesByUsername(current_user["username"])
-    #
-    # for value in classes["data"].values():
-    #     listbox.insert(END, value["class_name"])
+    for value in classes["data"].values():
+        classes_scrollbar.add_item(value["class_name"])
 
 
 def goShowAttendanceUi(root, frame, classes, index):
     global current_class
-    current_class = list(classes)[index[0]]
+    current_class = list(classes)[index]
+    print(current_class)
     toggle(root, frame, 'attendances')
 
 
