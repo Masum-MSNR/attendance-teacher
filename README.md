@@ -1,6 +1,6 @@
 # Attendance Management System with Biometric Integration
 
-![App Screenshot](screenshot.png)
+![App Screenshot](feature.png)
 
 This is a Python desktop application built using the `customtkinter` 
 library to manage attendance for classes. The application allows teachers
