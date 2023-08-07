@@ -1,6 +1,8 @@
 import customtkinter as ctk
 
 
+# This is a custom class that inherits from ctk.CTkScrollableFrame class
+# This class is used to create a scrollable frame with a label and a button
 class ScrollableLabelButtonFrame(ctk.CTkScrollableFrame):
     def __init__(self, root, master, classes, command=None, **kwargs):
         super().__init__(master, **kwargs)
@@ -29,6 +31,8 @@ class ScrollableLabelButtonFrame(ctk.CTkScrollableFrame):
         self.code_list.append(code)
 
 
+# This is a custom class that inherits from ctk.CTkScrollableFrame class
+# This class is used to create a scrollable frame with a button
 class ScrollableButtonFrame(ctk.CTkScrollableFrame):
     def __init__(self, root, master, classes, command=None, **kwargs):
         super().__init__(master, **kwargs)
@@ -49,6 +53,8 @@ class ScrollableButtonFrame(ctk.CTkScrollableFrame):
         self.button_list.append(button)
 
 
+# This is a custom class that inherits from ctk.CTkScrollableFrame class
+# This class is used to create a scrollable frame with a label
 class ScrollableLabelFrame(ctk.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -61,6 +67,8 @@ class ScrollableLabelFrame(ctk.CTkScrollableFrame):
         self.label_list.append(label)
 
 
+# This is a custom class that inherits from ctk.CTkScrollableFrame class
+# This class is used to create a scrollable frame with a label with click event
 class ScrollableLabelFrame2(ctk.CTkScrollableFrame):
     def __init__(self, root, master, data, command=None, **kwargs):
         super().__init__(master, **kwargs)

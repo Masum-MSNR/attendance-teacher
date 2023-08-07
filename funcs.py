@@ -1,6 +1,7 @@
 from repo import *
 
 
+# All functions handles database manipulation and returns a dictionary with status and message
 def doLogin(username, password):
     res = getDb().child("users").child(username).get().val()
     if res is None:

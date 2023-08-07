@@ -1,3 +1,4 @@
+# validates login
 def loginValidator(username, password):
     if username == "" or len(username) < 5:
         return {"status": False, "message": "Username must be at least 5 characters"}
@@ -6,6 +7,7 @@ def loginValidator(username, password):
     return {"status": True, "message": "Login success"}
 
 
+# validates register
 def registerValidator(username, fullname, email, password, confirmPass):
     if username == "" or len(username) < 5:
         return {"status": False, "message": "Username must be at least 5 characters"}
@@ -22,6 +24,7 @@ def registerValidator(username, fullname, email, password, confirmPass):
     return {"status": True, "message": "Register success"}
 
 
+# validates create class
 def createClassValidator(classname):
     if classname == "":
         return {"status": False, "message": "Classname must not be empty"}

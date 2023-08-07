@@ -1,5 +1,7 @@
 from pyrebase import *
 
+# firebase config [remote database]
+
 firebaseConfig = {
     'apiKey': "AIzaSyDQZ04wURdN2E3N_cMRO06M4CQ4DEnPvhk",
     'authDomain': "attendance-f373c.firebaseapp.com",
@@ -11,10 +13,12 @@ firebaseConfig = {
     'measurementId': "G-1505CH1RN4"
 }
 
+# db initialization
 db = pyrebase.initialize_app(firebaseConfig)
 connection = None
 
 
+# create a connection to the database a singleton
 def getDb():
     global connection
     if connection is None:

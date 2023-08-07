@@ -14,6 +14,7 @@ g_current_date = ""
 current_attendances = []
 
 
+# This function is used to show different UIs according to the view type
 def toggle(root, frame, ui):
     frame.destroy()
     if ui == "login":
@@ -34,6 +35,7 @@ def toggle(root, frame, ui):
         attendanceByDateUi(root)
 
 
+# This function is used to show the login UI
 def showLoginUi(root):
     frame = ctk.CTkFrame(root)
     frame.pack(fill="both", expand=True)
@@ -95,6 +97,7 @@ def showLoginUi(root):
     warning_label.pack()
 
 
+# After validation is done, this function is used to log in
 def login(root, frame, username, password, warning_text):
     res = loginValidator(username, password)
     if res["status"] is False:
@@ -109,6 +112,7 @@ def login(root, frame, username, password, warning_text):
         toggle(root, frame, "main")
 
 
+# This function is used to show the register UI
 def showRegisterUi(root):
     frame = ctk.CTkFrame(root)
     frame.pack(fill="both", expand=True)
@@ -197,6 +201,7 @@ def showRegisterUi(root):
     warning_label.pack()
 
 
+# After validation is done, this function is used to register
 def register(root, frame, username, fullname, email, password, confirm_pass, warning_text):
     res = registerValidator(username, fullname, email, password, confirm_pass)
     if res["status"] is False:
@@ -209,6 +214,8 @@ def register(root, frame, username, fullname, email, password, confirm_pass, war
         toggle(root, frame, "login")
 
 
+# This function is used to show the main UI
+# After login, this function is called
 def showMainUi(root):
     frame = ctk.CTkFrame(root)
     frame.pack(fill="both", expand=True)
@@ -280,6 +287,7 @@ def showMainUi(root):
         classes_scrollbar.add_item(value["class_name"], value["class_code"])
 
 
+# This function is used to show the attendances already taken
 def goShowAttendanceUi(root, frame, classes, index):
     global current_class
     current_class = list(classes)[index]
@@ -287,6 +295,7 @@ def goShowAttendanceUi(root, frame, classes, index):
     toggle(root, frame, 'attendances')
 
 
+# This function is used to show the form to create a class
 def showCreateClassUi(root):
     frame = ctk.CTkFrame(root)
     frame.pack(fill="both", expand=True)
@@ -347,6 +356,7 @@ def showCreateClassUi(root):
     warning_label.pack()
 
 
+# After validating the form, this function is used to create a class
 def createClass(root, frame, className, classCode, warning_text):
     res = createClassValidator(className)
     if res["status"] is False:
@@ -359,6 +369,7 @@ def createClass(root, frame, className, classCode, warning_text):
         toggle(root, frame, "main")
 
 
+# This function is used to show the class selection UI
 def selectClassToTakeAttendanceUi(root):
     frame = ctk.CTkFrame(root)
     frame.pack(fill="both", expand=True)
@@ -398,6 +409,7 @@ def selectClassToTakeAttendanceUi(root):
         classes_scrollbar.add_item(value["class_name"])
 
 
+# This function helps to go to the attendance taking UI after selecting a class
 def goToAttendanceTakingUi(root, frame, classes, index):
     global current_class
     data_list = list(classes)
@@ -405,6 +417,8 @@ def goToAttendanceTakingUi(root, frame, classes, index):
     toggle(root, frame, "attendance_taking")
 
 
+# This function is used to show the attendance taking UI
+# It updates dynamically according to the attendance taken
 def attendanceTakingUi(root):
     frame = ctk.CTkFrame(root)
     frame.pack(fill="both", expand=True)
@@ -436,6 +450,7 @@ def attendanceTakingUi(root):
     openAttendanceInstance(rolls)
 
 
+# This function is used to create an attendance instance in database
 def openAttendanceInstance(rolls):
     current_date = datetime.now().strftime("%Y%m%d")
     model = {
@@ -449,18 +464,21 @@ def openAttendanceInstance(rolls):
         lambda event: onAttendanceUpdate(event, rolls))
 
 
+# This function is used to update the attendance UI dynamically according to the attendance taken
 def onAttendanceUpdate(event, rolls):
     print(event)
     if event["data"] is not None:
         rolls.add_item(event["data"])
 
 
+# This function is used to close the attendance instance in database
 def closeAttendance(root, frame, next_frame):
     current_date = datetime.now().strftime("%Y%m%d")
     res = getDb().child("attendance").child(current_class['class_code']).child(current_date).child("open").set(False)
     toggle(root, frame, next_frame)
 
 
+# This function is used to show the class attendance UI
 def classAttendanceUi(root):
     frame = ctk.CTkFrame(root)
     frame.pack(fill="both", expand=True)
@@ -483,7 +501,7 @@ def classAttendanceUi(root):
                          corner_radius=10,
                          width=300,
                          )
-    title.pack(pady=(0,15), ipady=10)
+    title.pack(pady=(0, 15), ipady=10)
 
     attendances = getAttendancesByClassCode(current_class['class_code'])
     data = attendances["data"]
@@ -511,6 +529,7 @@ def classAttendanceUi(root):
         dates_scroll.add_item(lDate)
 
 
+# This function is used to go to the attendance by date UI according to the date selected
 def goAttendanceByDateUi(root, frame, attendances, index):
     global current_attendances
     data_list = list(attendances.keys())
@@ -528,6 +547,7 @@ def goAttendanceByDateUi(root, frame, attendances, index):
     toggle(root, frame, "attendance_by_date")
 
 
+# This function is used to show the attendance by date UI
 def attendanceByDateUi(root):
     frame = ctk.CTkFrame(root)
     frame.pack(fill="both", expand=True)
