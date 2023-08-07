@@ -22,8 +22,8 @@ using biometric scans.
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/attendance-management.git
-   cd attendance-management
+   git clone https://github.com/Masum-MSNR/attendance-teacher.git
+   cd attendance-teacher
 
 2. Install the dependencies:
 
